@@ -98,10 +98,13 @@ func getBillingAccounts() (map[string]string, error) {
 
 func main() {
 	port := flag.Int("port", 8080, "Provide a port for this service to listen on")
+	webHost := flag.String("web-host", "", "Provide the web-host to reach this server on")
 	flag.Parse()
 	portArg := fmt.Sprintf(":%d", *port)
+	webUrl := fmt.Sprintf("https://%d-%s/?authuser=0", *port, *webHost)
 	fmt.Println("Starting service on port ", portArg)
 	http.HandleFunc("/", showInputForm)
 	http.HandleFunc("/config", postConfig)
+	fmt.Printf("Please op a new browser tab with url: %s\n", webUrl)
 	http.ListenAndServe(portArg, nil)
 }
