@@ -3,6 +3,7 @@ package main
 import (
 	billing "cloud.google.com/go/billing/apiv1"
 	"context"
+	"flag"
 	"fmt"
 	"google.golang.org/api/iterator"
 	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
@@ -37,7 +38,7 @@ func postConfig(w http.ResponseWriter, req *http.Request) {
 	orgDomain := req.FormValue("orgDomain")
 	parentFolderId := req.FormValue("parentFolderId")
 	billingAccount := req.FormValue("billingAccount")
-	fmt.Fprintf(w, "billlingAccount: %s\n", billingAccount)
+	fmt.Fprintf(w, "billingAccount: %s\n", billingAccount)
 	fmt.Fprintf(w, "orgDomain: %s\n", orgDomain)
 	fmt.Fprintf(w, "parentFolderId: %s\n", parentFolderId)
 	data := fmt.Sprintf(`billing_account_id = "%s"
@@ -96,8 +97,11 @@ func getBillingAccounts() (map[string]string, error) {
 }
 
 func main() {
-	fmt.Println("Starting service ...")
+	port := flag.Int("port", 8080, "Provide a port for this service to listen on")
+	flag.Parse()
+	portArg := fmt.Sprintf(":%d", *port)
+	fmt.Println("Starting service on port ", portArg)
 	http.HandleFunc("/", showInputForm)
 	http.HandleFunc("/config", postConfig)
-	http.ListenAndServe(":8090", nil)
+	http.ListenAndServe(portArg, nil)
 }
