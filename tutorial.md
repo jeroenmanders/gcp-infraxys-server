@@ -7,7 +7,7 @@ This walkthrough assists with the setup of Infraxys Server in GCP.
 
 [//]: # (<walkthrough-project-setup billing="true"></walkthrough-project-setup>)
 
-### You need to be authenticated in Cloud shell 
+### Application Default credentials should be set 
 
 This account should have permission to create projects.  
 
@@ -20,7 +20,7 @@ gcloud auth list;
 If no account is active, then login using:
 
 ```bash
-gcloud auth login;
+gcloud auth application-default login;
 ```
 
 ### Start the configuration

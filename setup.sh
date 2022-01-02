@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
 
+set -euo pipefail;
+
 TERRAFORM_VERSION="1.1.2";
 TERRAFORM="/tmp/terraform-$TERRAFORM_VERSION";
 
+function initialize() {
+  echo "Listing service accounts to force the authorization popup to show.";
+  gcloud alpha billing accounts list;
+}
+
 function request_config() {
+  local VARS_FILE="temp.auto.tfvars";
+  [[ -f "$VARS_FILE" ]] && "Echo remove file '$VARS_FILE'. Current contents:" && cat $VARS_FILE && rm -f $VARS_FILE;
+
   echo
   echo "Building and running the config collector ..."
 
   cd config-collector;
   go run . --port 8080 --web-host "$WEB_HOST"
   cd -;
+  [[ ! -f "$VARS_FILE" ]] && "File '$VARS_FILE' wasn't created. Aborting. You can re-run setup.sh if desired." && exit 1;
 }
 
 function ensure_terraform() {
@@ -48,5 +59,7 @@ function run_terraform() {
 
 }
 
+initialize;
 request_config;
-# ensure_terraform;
+ensure_terraform;
+run_terraform;
