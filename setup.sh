@@ -4,8 +4,11 @@ TERRAFORM_VERSION="1.1.2";
 TERRAFORM="/tmp/terraform-$TERRAFORM_VERSION";
 
 function request_config() {
+  echo
+  echo "Building and running the config collector ..."
+
   cd config-collector;
-  go run .
+  go run . --port 8080 --web-host "$WEB_HOST"
   cd -;
 }
 
