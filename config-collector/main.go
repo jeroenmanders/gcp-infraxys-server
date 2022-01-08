@@ -8,44 +8,54 @@ import (
 	"google.golang.org/api/iterator"
 	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 )
 
-type ConfigData struct {
+type ConfigValues struct {
 	BillingAccounts map[string]string
 }
 
-func showInputForm(w http.ResponseWriter, req *http.Request) {
+type ConfigData struct {
+	BillingAccount string
+	Domain         string
+	ParentFolderId string
+}
+
+var server http.Server
+
+func showHomePage(w http.ResponseWriter, _ *http.Request) {
 	billingAccounts, err := getBillingAccounts()
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	}
-	data := &ConfigData{
+	data := &ConfigValues{
 		BillingAccounts: billingAccounts,
 	}
 	//fmt.Printf("%+v", data.BillingAccounts)
 
-	t, _ := template.ParseFiles("webpage-template.html")
-	t.Execute(w, data)
+	t, _ := template.ParseFiles("templates/homepage.html")
+	if err = t.Execute(w, data); err != nil {
+		fmt.Printf("Error: %v", err.Error())
+	}
 }
 
 func postConfig(w http.ResponseWriter, req *http.Request) {
 	if err := req.ParseForm(); err != nil {
-		fmt.Fprintf(w, "ParseForm() err: %v", err)
+		_, _ = fmt.Fprintf(w, "ParseForm() err: %v", err.Error())
 		return
 	}
-	orgDomain := req.FormValue("orgDomain")
-	parentFolderId := req.FormValue("parentFolderId")
-	billingAccount := req.FormValue("billingAccount")
-	fmt.Fprintf(w, "billingAccount: %s\n", billingAccount)
-	fmt.Fprintf(w, "orgDomain: %s\n", orgDomain)
-	fmt.Fprintf(w, "parentFolderId: %s\n", parentFolderId)
-	data := fmt.Sprintf(`billing_account_id = "%s"
+	data := &ConfigData{}
+
+	data.BillingAccount = req.FormValue("billingAccount")
+	data.Domain = req.FormValue("orgDomain")
+	data.ParentFolderId = req.FormValue("parentFolderId")
+
+	fileData := fmt.Sprintf(`billing_account_id = "%s"
 domain = "%s"
 parent_folder_id = "%s"
-`, billingAccount, orgDomain, parentFolderId)
-	fmt.Fprintf(w, data)
+`, data.BillingAccount, data.Domain, data.ParentFolderId)
 
 	fi, err := os.OpenFile("../test.auto.tfvars", os.O_RDWR|os.O_CREATE, 0600)
 
@@ -53,12 +63,23 @@ parent_folder_id = "%s"
 		fmt.Println("Error with Open()", err)
 		return
 	}
-	defer fi.Close()
-	_, err = fi.Write([]byte(data))
+
+	defer func() { _ = fi.Close() }()
+	_, err = fi.Write([]byte(fileData))
 	if err != nil {
 		fmt.Println("Error with Open()", err)
 		return
 	}
+
+	t, _ := template.ParseFiles("templates/config.html")
+	if err = t.Execute(w, data); err != nil {
+		fmt.Printf("Error parsing template: %v", err.Error())
+	}
+
+}
+
+func stop(_ http.ResponseWriter, _ *http.Request) {
+	_ = server.Shutdown(context.Background())
 }
 
 func getBillingAccounts() (map[string]string, error) {
@@ -67,7 +88,7 @@ func getBillingAccounts() (map[string]string, error) {
 	ctx := context.Background()
 	billingClient, err := billing.NewCloudBillingClient(ctx)
 
-	defer billingClient.Close()
+	defer func() { _ = billingClient.Close() }()
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +124,14 @@ func main() {
 	portArg := fmt.Sprintf(":%d", *port)
 	webUrl := fmt.Sprintf("https://%d-%s/?authuser=0", *port, *webHost)
 	fmt.Println("Starting service on port ", portArg)
-	http.HandleFunc("/", showInputForm)
-	http.HandleFunc("/config", postConfig)
-	fmt.Printf("Please op a new browser tab with url: %s\n", webUrl)
-	http.ListenAndServe(portArg, nil)
+	m := http.NewServeMux()
+	server = http.Server{Addr: portArg, Handler: m}
+	m.HandleFunc("/", showHomePage)
+	m.HandleFunc("/config", postConfig)
+	m.HandleFunc("/stop", postConfig)
+	fmt.Printf("Please open a new browser tab with url: %s\n", webUrl)
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
+	log.Printf("Done")
 }
