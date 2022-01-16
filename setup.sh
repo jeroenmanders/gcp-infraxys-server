@@ -60,7 +60,7 @@ function run_terraform() {
 
 }
 
-if [ "$DIRECT_RUN" != "true" ]; then
+if [ ${DIRECT_RUN:-false} != "true" ]; then
   initialize;
   request_config;
   ensure_terraform;

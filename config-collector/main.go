@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 
@@ -64,8 +65,9 @@ func postConfig(w http.ResponseWriter, req *http.Request) {
 	}
 
 	data := &ConfigData{}
-	data.Organization = req.FormValue("organization")
-	data.BillingAccount = req.FormValue("billingAccount")
+	data.Organization = strings.TrimLeft(req.FormValue("organization"), "organizations/")
+	data.BillingAccount = strings.TrimLeft(req.FormValue("billingAccount"), "billingAccounts/")
+
 	data.ProjectName = req.FormValue("projectName")
 	data.ParentFolderID = req.FormValue("parentFolderID")
 
@@ -130,7 +132,6 @@ func getOrganizations() (map[string]string, error) {
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
-			log.Println("No more organizations to loop over")
 			break
 		}
 		if err != nil {
@@ -169,7 +170,6 @@ func getBillingAccounts() (map[string]string, error) {
 	for {
 		resp, err := it.Next()
 		if resp == nil {
-			log.Println("No more billing accounts.")
 			break
 		}
 
