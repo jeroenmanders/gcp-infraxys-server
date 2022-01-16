@@ -2,28 +2,14 @@
 
 This walkthrough assists with the setup of Infraxys Server in GCP.
 
-## Prerequisites
-
+This version creates the following resources:
+- VPC network.
+- Virtual machine containing Infraxys with all it's dependencies.
 
 [//]: # (<walkthrough-project-setup billing="true"></walkthrough-project-setup>)
 
-### Application Default credentials should be set 
 
-This account should have permission to create projects.  
-
-<TODO: specify exact list of permissions needed>. 
-
-Run the following command to validate this:
-```bash
-gcloud auth list;
-```
-If no account is active, then login using:
-
-```bash
-gcloud auth application-default login;
-```
-
-### Start the configuration
+## Start the configuration
 
 - Run setup.sh:
 ```bash

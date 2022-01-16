@@ -65,7 +65,7 @@ domain = "%s"
 parent_folder_id = "%s"
 `, data.BillingAccount, data.Domain, data.ParentFolderID)
 
-	fi, err := os.OpenFile("../test.auto.tfvars", os.O_RDWR|os.O_CREATE, 0600)
+	fi, err := os.OpenFile("../temp.auto.tfvars", os.O_RDWR|os.O_CREATE, 0600)
 
 	if err != nil {
 		fmt.Printf("Error opening output file: %s.\n", err.Error())
