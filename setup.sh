@@ -12,7 +12,7 @@ function initialize() {
 
 function request_config() {
   local VARS_FILE="temp.auto.tfvars";
-  [[ -f "$VARS_FILE" ]] && "Echo remove file '$VARS_FILE'. Current contents:" && cat $VARS_FILE && rm -f $VARS_FILE;
+  [[ -f "$VARS_FILE" ]] && "Echo removing file '$VARS_FILE'. Current contents:" && cat $VARS_FILE && rm -f $VARS_FILE;
 
   echo
   echo "Building and running the config collector ..."
