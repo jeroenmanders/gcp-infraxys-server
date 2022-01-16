@@ -22,8 +22,9 @@ import (
 )
 
 type HomePageValues struct {
-	Organizations   map[string]string
-	BillingAccounts map[string]string
+	Organizations      map[string]string
+	BillingAccounts    map[string]string
+	DefaultProjectName string
 }
 
 type ConfigData struct {
@@ -34,6 +35,7 @@ type ConfigData struct {
 }
 
 var server http.Server
+var conf config.Config
 
 func showHomePage(w http.ResponseWriter, _ *http.Request) {
 	organizations, err := getOrganizations()
@@ -48,8 +50,9 @@ func showHomePage(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	data := &HomePageValues{
-		Organizations:   organizations,
-		BillingAccounts: billingAccounts,
+		Organizations:      organizations,
+		BillingAccounts:    billingAccounts,
+		DefaultProjectName: conf.DefaultProjectName,
 	}
 
 	t, _ := template.ParseFiles("templates/homepage.html")
@@ -67,7 +70,6 @@ func postConfig(w http.ResponseWriter, req *http.Request) {
 	data := &ConfigData{}
 	data.Organization = strings.TrimLeft(req.FormValue("organization"), "organizations/")
 	data.BillingAccount = strings.TrimLeft(req.FormValue("billingAccount"), "billingAccounts/")
-
 	data.ProjectName = req.FormValue("projectName")
 	data.ParentFolderID = req.FormValue("parentFolderID")
 
@@ -77,8 +79,8 @@ project_name = "%s"
 parent_folder_id = "%s"
 `, data.Organization, data.BillingAccount, data.ProjectName, data.ParentFolderID)
 
-	log.Println("Writing file ../temp.auto.tfvars")
-	fi, err := os.OpenFile("../temp.auto.tfvars", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	log.Printf("Writing file %s\n", conf.VarsFile)
+	fi, err := os.OpenFile(conf.VarsFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 
 	if err != nil {
 		fmt.Printf("Error opening output file: %s.\n", err.Error())
@@ -203,7 +205,7 @@ func init() {
 }
 
 func main() {
-	conf := config.New()
+	conf = *config.New()
 	portArg := fmt.Sprintf(":%d", conf.Port)
 
 	if conf.HostPort == 0 {

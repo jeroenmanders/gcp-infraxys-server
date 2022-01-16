@@ -1,5 +1,5 @@
 
-module "seed_project" {
+module "gcp-project" {
   source                      = "terraform-google-modules/project-factory/google"
   version                     = "~> 11.3"
   name                        = var.project_name

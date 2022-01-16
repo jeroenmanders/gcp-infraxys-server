@@ -10,12 +10,12 @@
 </head>
 <body>
 <div class="container">
-    <h2>Select billing account</h2>
+    <h2>Config collector</h2>
     <p>A new project will be created and it will need a billing account for its resources.</p>
     <form class="col s6" id="configForm" action="/config" method="POST">
         <div class="row">
             <div class="input-field col s6">
-                <input placeholder="infraxys" id="projectName" name="projectName" type="text" class="validate" value="infraxys" />
+                <input placeholder="{{ .DefaultProjectName }}" id="projectName" name="projectName" type="text" class="validate" value="{{ .DefaultProjectName }}" />
                 <label for="projectName">Project name</label>
             </div>
         </div>

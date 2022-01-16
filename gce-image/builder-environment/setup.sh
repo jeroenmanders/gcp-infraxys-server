@@ -3,15 +3,14 @@
 set -euo pipefail;
 
 export VARS_FILE="$(pwd)/temp.auto.tfvars";
-export DEFAULT_PROJECT_NAME="infraxys";
+export DEFAULT_PROJECT_NAME="infraxys-image-builder";
 
-. ./env.sh;
+. ../../env.sh;
 
-if [ ${DIRECT_RUN:-false} != "true" ]; then
+#if [ ${DIRECT_RUN:-false} != "true" ]; then
   initialize;
   request_config;
-  ensure_packer;
   ensure_terraform;
-fi;
+#fi;
 
 run_terraform;
