@@ -29,4 +29,6 @@ override.tf.json
 # example: *tfplan*
 
 **/.local/*
+.env.local
 .idea/*
+temp.auto.tfvars

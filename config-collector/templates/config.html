@@ -1,23 +1,30 @@
 <head>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
           media="screen,projection"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Configuration</title>
 </head>
 <body>
-<h2>Configuration written</h2>
-<p>The temporary webserver will be stopped.</p>
-<p>Close this tab and proceed in the tab with CloudShell after pressing continue.</p>
-<br>
-<div>
-    <label>Domain</label>: {{ .Domain }}
-    <label>Billing account id</label>: {{ .BillingAccount }}
-    <label>Parent folder id</label>: {{ .ParentFolderId }}
+<div class="container">
+    <h2>Configuration written</h2>
+    <p>Press the "Close and continue"-button to stop temporary webserver.</p>
+    <p>Then close this tab and proceed in the CloudShell that started the setup.</p>
+    <br>
+    <p>Press "back" to change the configuration.</p>
+    <br>
+    <div>
+        <label>Domain</label>: {{ .Domain }}
+    </div>
+    <div>
+        <label>Billing account id</label>: {{ .BillingAccount }}
+    </div>
+    <div>
+        <label>Parent folder id</label>: {{ .ParentFolderID }}
+    </div>
+
+    <a href="/stop" class="waves-effect waves-light btn"><i class="material-icons right">cloud</i>Close and continue</a>
 </div>
-
-<a href="/config" class="waves-effect waves-light btn"><i class="material-icons right">cloud</i>Continue</a>
-
 </body>

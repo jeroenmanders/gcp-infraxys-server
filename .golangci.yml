@@ -1,3 +1,7 @@
+run:
+  deadline: 2m30s
+  issues-exit-code: 1
+
 linters-settings:
   errcheck:
     check-type-assertions: true
@@ -17,7 +21,7 @@ linters-settings:
     settings:
       mnd:
         # don't include the "operation" and "assign" checks
-        checks: argument,case,condition,return
+        checks: [argument,case,condition,return]
   govet:
     check-shadowing: true
   nolintlint:
@@ -27,44 +31,60 @@ linters-settings:
 linters:
   disable-all: true
   enable:
-    - bodyclose
     - deadcode
-    - depguard
-    - dogsled
-    - dupl
     - errcheck
-    # - errorlint
-    - exportloopref
-    - exhaustive
-    - goconst
-    - godot
-    - gocritic
     - gofmt
-    - goimports
-    - gomnd
-    - gocyclo
-    - goprintffuncname
-    - gosec
     - gosimple
-    - govet
     - ineffassign
     - misspell
-    - nakedret
-    - nolintlint
-    - prealloc
-    - predeclared
-    - revive
     - staticcheck
     - structcheck
-    - stylecheck
-    - thelper
-    - tparallel
-    - typecheck
     - unconvert
-    - unparam
+    - unused
     - varcheck
-    - whitespace
-    - wsl
+    - vet
+
+#linters:
+#  disable-all: true
+#  enable:
+#    - bodyclose
+#    - deadcode
+#    - depguard
+#    - dogsled
+#    - dupl
+#    - errcheck
+#    # - errorlint
+#    - exportloopref
+#    - exhaustive
+#    - goconst
+#    - godot
+#    - gocritic
+#    - gofmt
+#    - goimports
+##    - gomnd
+#    - gocyclo
+#    - goprintffuncname
+#    - gosec
+#    - gosimple
+#    - govet
+#    - ineffassign
+#    - misspell
+#    - nakedret
+#    - nolintlint
+#    - prealloc
+#    - predeclared
+#    - revive
+#    - staticcheck
+#    - structcheck
+#    - stylecheck
+#    - thelper
+#    - tparallel
+#    - typecheck
+#    - unconvert
+#    - unparam
+#    - varcheck
+#    - whitespace
+#    - wsl
 
 issues:
   fix: true
@@ -83,6 +103,3 @@ issues:
 
   max-issues-per-linter: 0
   max-same-issues: 0
-
-run:
-  issues-exit-code: 1
