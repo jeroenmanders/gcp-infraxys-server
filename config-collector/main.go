@@ -64,7 +64,7 @@ func postConfig(w http.ResponseWriter, req *http.Request) {
 domain = "%s"
 parent_folder_id = "%s"
 `, data.BillingAccount, data.Domain, data.ParentFolderID)
-
+	log.Printf("data.ParentFolderID: %s", data.ParentFolderID)
 	fi, err := os.OpenFile("../temp.auto.tfvars", os.O_RDWR|os.O_CREATE, 0600)
 
 	if err != nil {
@@ -134,7 +134,6 @@ func getBillingAccounts() (map[string]string, error) {
 			return nil, err
 		}
 
-		fmt.Println("Processing billing account")
 		if resp.Open {
 			fmt.Printf("Adding billing account '%s'.\n", resp.DisplayName)
 			accounts[resp.Name] = resp.DisplayName
