@@ -4,15 +4,16 @@ go 1.17
 
 require (
 	cloud.google.com/go/billing v1.0.0
+	cloud.google.com/go/resourcemanager v1.0.0
 	github.com/golangci/golangci-lint v1.43.0
 	github.com/joho/godotenv v1.4.0
-	google.golang.org/api v0.65.0
-	google.golang.org/genproto v0.0.0-20220114231437-d2e6a121cae0
+	google.golang.org/api v0.57.0
+	google.golang.org/genproto v0.0.0-20210921142501-181ce0d877f6
 )
 
 require (
 	4d63.com/gochecknoglobals v0.1.0 // indirect
-	cloud.google.com/go/compute v0.1.0 // indirect
+	cloud.google.com/go v0.94.1 // indirect
 	github.com/Antonboom/errname v0.1.5 // indirect
 	github.com/Antonboom/nilnil v0.1.0 // indirect
 	github.com/BurntSushi/toml v0.4.1 // indirect

@@ -6,6 +6,7 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
           media="screen,projection"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Configuration</title>
 </head>
 <body>
 <div class="container">
@@ -14,14 +15,28 @@
     <form class="col s6" id="configForm" action="/config" method="POST">
         <div class="row">
             <div class="input-field col s6">
-                <input placeholder="example.com" id="orgDomain" name="orgDomain" type="text" class="zvalidate">
-                <label for="orgDomain">Organization domain (optional)</label>
+                <input placeholder="infraxys" id="projectName" name="projectName" type="text" class="validate" value="infraxys" />
+                <label for="projectName">Project name</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s6">
                 <input placeholder="1111111111" id="parentFolderID" name="parentFolderID" type="text" class="zvalidate">
                 <label for="parentFolderID">Project folder (optional)</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col s6">
+                <label for="organization">Organization</label>
+                {{ range $key, $displayName := .Organizations }}
+                <div>
+                    <label>
+                        <input id="organization" name="organization" type="radio" value="{{ $key }}" checked/>
+                        <span>{{ $displayName }}</span>
+                    </label>
+                </div>
+                {{ end }}
             </div>
         </div>
         <div class="row">

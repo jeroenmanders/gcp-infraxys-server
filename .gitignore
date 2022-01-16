@@ -32,3 +32,4 @@ override.tf.json
 .env.local
 .idea/*
 temp.auto.tfvars
+.terraform.lock.hcl

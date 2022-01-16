@@ -15,30 +15,39 @@ import (
 	billing "cloud.google.com/go/billing/apiv1"
 	"google.golang.org/api/iterator"
 	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
+
+	resourcemanager "cloud.google.com/go/resourcemanager/apiv3"
+	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v3"
 )
 
 type HomePageValues struct {
+	Organizations   map[string]string
 	BillingAccounts map[string]string
 }
 
 type ConfigData struct {
+	Organization   string
 	BillingAccount string
-	Domain         string
+	ProjectName    string
 	ParentFolderID string
 }
 
 var server http.Server
 
 func showHomePage(w http.ResponseWriter, _ *http.Request) {
-	fmt.Println("In showHomePage")
+	organizations, err := getOrganizations()
+	if err != nil {
+		fmt.Printf("Error retrieving organizations: %s", err.Error())
+	}
 
 	billingAccounts, err := getBillingAccounts()
 
 	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
+		fmt.Printf("Error retrieving billing accounts: %s", err.Error())
 	}
 
 	data := &HomePageValues{
+		Organizations:   organizations,
 		BillingAccounts: billingAccounts,
 	}
 
@@ -55,23 +64,24 @@ func postConfig(w http.ResponseWriter, req *http.Request) {
 	}
 
 	data := &ConfigData{}
-
+	data.Organization = req.FormValue("organization")
 	data.BillingAccount = req.FormValue("billingAccount")
-	data.Domain = req.FormValue("orgDomain")
+	data.ProjectName = req.FormValue("projectName")
 	data.ParentFolderID = req.FormValue("parentFolderID")
 
-	fileData := fmt.Sprintf(`billing_account_id = "%s"
-domain = "%s"
+	fileData := fmt.Sprintf(`org_id = "%s"
+billing_account_id = "%s"
+project_name = "%s"
 parent_folder_id = "%s"
-`, data.BillingAccount, data.Domain, data.ParentFolderID)
-	log.Printf("data.ParentFolderID: %s", data.ParentFolderID)
-	fi, err := os.OpenFile("../temp.auto.tfvars", os.O_RDWR|os.O_CREATE, 0600)
+`, data.Organization, data.BillingAccount, data.ProjectName, data.ParentFolderID)
+
+	log.Println("Writing file ../temp.auto.tfvars")
+	fi, err := os.OpenFile("../temp.auto.tfvars", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 
 	if err != nil {
 		fmt.Printf("Error opening output file: %s.\n", err.Error())
 		return
 	}
-
 	defer func() { _ = fi.Close() }()
 
 	if _, err = fi.WriteString(fileData); err != nil {
@@ -100,11 +110,50 @@ func stop(w http.ResponseWriter, _ *http.Request) {
 	_ = server.Shutdown(context.Background())
 }
 
+func getOrganizations() (map[string]string, error) {
+	organizations := make(map[string]string)
+
+	log.Println("Retrieving organizations.")
+	ctx := context.Background()
+	c, err := resourcemanager.NewOrganizationsClient(ctx)
+	if err != nil {
+		log.Printf("Error creating organizations client: %s", err.Error())
+		return nil, err
+	}
+
+	defer func() { _ = c.Close() }()
+	req := &resourcemanagerpb.SearchOrganizationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#SearchOrganizationsRequest.
+	}
+	it := c.SearchOrganizations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			log.Println("No more organizations to loop over")
+			break
+		}
+		if err != nil {
+			log.Printf("Error looping organizations: %s", err.Error())
+			return nil, err
+		}
+		if resp.State == resourcemanagerpb.Organization_ACTIVE {
+			organizations[resp.Name] = resp.DisplayName
+		} else {
+			log.Printf("Skipping not-active organization %s: ", resp.DisplayName)
+		}
+	}
+	if len(organizations) == 0 {
+		fmt.Println("No active organizations found.")
+	}
+	return organizations, nil
+}
+
 func getBillingAccounts() (map[string]string, error) {
 	accounts := make(map[string]string)
 
 	ctx := context.Background()
-	fmt.Println("Retrieving billing accounts.")
+	log.Println("Retrieving billing accounts.")
 	billingClient, err := billing.NewCloudBillingClient(ctx)
 
 	if err != nil {
@@ -120,12 +169,12 @@ func getBillingAccounts() (map[string]string, error) {
 	for {
 		resp, err := it.Next()
 		if resp == nil {
-			fmt.Println("No more billing accounts.")
+			log.Println("No more billing accounts.")
 			break
 		}
 
 		if err == iterator.Done {
-			fmt.Println("Done with billing accounts.")
+			log.Println("Done with billing accounts.")
 			break
 		}
 
@@ -135,10 +184,9 @@ func getBillingAccounts() (map[string]string, error) {
 		}
 
 		if resp.Open {
-			fmt.Printf("Adding billing account '%s'.\n", resp.DisplayName)
 			accounts[resp.Name] = resp.DisplayName
 		} else {
-			fmt.Printf("Not adding billing account '%s' because it's not open.\n", resp.DisplayName)
+			log.Printf("Not adding billing account '%s' because it's not open.\n", resp.DisplayName)
 		}
 	}
 

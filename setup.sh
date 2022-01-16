@@ -30,9 +30,9 @@ function ensure_terraform() {
 
     [[ -f "$TERRAFORM" ]] && echo "$TERRAFORM already exists. Using it instead of downloading a new binary." && return;
 
-    local temp_dir="$(mktemp -d -p /tmp)";
+    local temp_dir="$(mktemp -d)";
 
-    echo "Downloading $zip_file to /tmp.";
+    echo "Downloading $zip_file to $temp_dir/$zip_file.";
     curl -sLo $temp_dir/$zip_file $url;
 
     echo "Extracting archive.";
@@ -60,7 +60,10 @@ function run_terraform() {
 
 }
 
-initialize;
-request_config;
-ensure_terraform;
+if [ "$DIRECT_RUN" != "true" ]; then
+  initialize;
+  request_config;
+  ensure_terraform;
+fi;
+
 run_terraform;

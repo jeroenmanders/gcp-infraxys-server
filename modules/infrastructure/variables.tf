@@ -1,5 +1,10 @@
-variable "domain" {
-  description = "Domain name of the organization we're working under."
+variable "org_id" {
+  description = "ID of the organization we're working under."
+  type = string
+}
+
+variable "billing_account_id" {
+  description = "ID of the billing account to use for the project."
   type = string
 }
 
