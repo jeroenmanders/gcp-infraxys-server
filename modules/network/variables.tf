@@ -19,3 +19,7 @@ variable "project_name" {
   type = string
 }
 
+variable "activate_apis" {
+  description = "Specify a list of APIs to enable"
+  type = list(string)
+}
