@@ -41,6 +41,7 @@ func showHomePage(w http.ResponseWriter, _ *http.Request) {
 	organizations, err := getOrganizations()
 	if err != nil {
 		fmt.Printf("Error retrieving organizations: %s", err.Error())
+		os.Exit(1)
 	}
 
 	billingAccounts, err := getBillingAccounts()
@@ -105,7 +106,7 @@ parent_folder_id = "%s"
 }
 
 func stop(w http.ResponseWriter, _ *http.Request) {
-	fmt.Println("Stopping server")
+	log.Println("Stopping server")
 
 	if f, ok := w.(http.Flusher); ok {
 		f.Flush()

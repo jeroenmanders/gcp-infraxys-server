@@ -13,7 +13,7 @@ variable "service_account_email" {
   type = string
 }
 
-variable "subnetwork" {
+variable "subnet" {
   description = "The subnet that the Packer instance should be running in."
   type = string
 }

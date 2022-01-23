@@ -1,36 +1,4 @@
 steps:
-#  - name: ubuntu
-#    id: 'create_image_spec'
-#    entrypoint: "bash"
-#    env:
-#    - 'PKR_VAR_zone=$_PKR_VAR_ZONE'
-#    - 'PKR_VAR_project_id=$_PKR_VAR_PROJECT_ID'
-#    args:
-#      - '-c'
-#      - |
-#         echo "zone: $$PKR_VAR_zone"
-#         echo "project: $$PKR_VAR_project_id"
-#        cat <<END>packer.json
-#        {
-#        "builders": [
-#          {
-#            "image_name": "$(echo helloworld-$TAG_NAME | sed 's/\.//')",
-#            "type": "googlecompute",
-#            "project_id": "$PROJECT_ID",
-#            "source_image_family": "${_IMAGE_FAMILY}",
-#            "image_family": "helloworld",
-#            "ssh_username": "packer",
-#            "zone": "${_IMAGE_ZONE}",
-#            "startup_script_file": "install-website.sh",
-#            "scopes": [
-#              "https://www.googleapis.com/auth/userinfo.email",
-#              "https://www.googleapis.com/auth/compute",
-#              "https://www.googleapis.com/auth/devstorage.full_control"
-#            ]
-#          }
-#          ]
-#        }
-#        END
   - name: 'gcr.io/$PROJECT_ID/packer'
     args:
       - init
@@ -39,6 +7,7 @@ steps:
     env:
       - 'PKR_VAR_zone=$_PKR_VAR_ZONE'
       - 'PKR_VAR_project_id=$_PKR_VAR_PROJECT_ID'
+      - 'PKR_VAR_subnet=$_PKR_VAR_SUBNET'
       - 'PKR_VAR_service_account_email=$_PKR_VAR_SERVICE_ACCOUNT_EMAIL'
     args:
       - build

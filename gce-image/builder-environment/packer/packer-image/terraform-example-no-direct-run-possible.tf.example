@@ -1,0 +1,36 @@
+# This file is here only as an example.
+#    GCP throws an error regarding invalid arguments when apply the trigger.
+#    This is probably because we don't have a repository.
+#    Replacing the trigger_template by a webhook results  in the same error ...
+
+
+data "terraform_remote_state" "infra" {
+  backend = "local"
+
+  config = {
+    path = "${path.module}/../../terraform.tfstate"
+  }
+}
+
+locals {
+  project_id = data.terraform_remote_state.infra.outputs.project_id
+}
+
+resource "google_cloudbuild_trigger" "service_account_trigger" {
+  project  = local.project_id
+  filename = "cloudbuild.yaml"
+  trigger_template {
+    branch_name = "main"
+    repo_name   = "packer-repo"
+  }
+}
+
+terraform {
+  required_version = ">= 1.1"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 4.5"
+    }
+  }
+}

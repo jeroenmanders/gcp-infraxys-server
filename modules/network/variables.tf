@@ -1,25 +1,19 @@
-variable "org_id" {
-  description = "ID of the organization we're working under."
-  type = string
+variable "project_id" {
+  description = "ID of the project that the VPC should be created in."
+  type        = string
 }
 
-variable "billing_account_id" {
-  description = "ID of the billing account to use for the project."
-  type = string
+variable "network_name" {
+  description = "Name of the VPC."
+  type        = string
 }
 
-variable "parent_folder_id" {
-  description = "ID of the parent folder to use. Leave blank to use the organization."
-  type = string
-  default = ""
+variable "subnets" {
+  description = "The subnets to create."
+  type        = list(map(string))
 }
 
-variable "project_name" {
-  description = "Name of the project."
-  type = string
-}
-
-variable "activate_apis" {
-  description = "Specify a list of APIs to enable"
-  type = list(string)
+variable "allow_ssh" {
+  description = "Create a firewall rule with tag 'allow-ssh' to allow ssh from any IP."
+  type        = string
 }

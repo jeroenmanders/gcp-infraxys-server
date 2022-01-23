@@ -1,0 +1,13 @@
+roles:
+  - name: "roles/compute.instanceAdmin.v1"
+    members:
+      - "serviceAccount:packer"
+      - "cloudbuild"
+  - name: "roles/iam.serviceAccountUser"
+    members:
+      - "serviceAccount:packer"
+      - "cloudbuild"
+  - name: "roles/logging.logWriter"
+    members:
+      - "serviceAccount:packer"
+      - "cloudbuild"

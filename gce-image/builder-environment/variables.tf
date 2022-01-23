@@ -20,10 +20,15 @@ variable "parent_folder_id" {
   default     = ""
 }
 
+variable "region" {
+  description = "Region to create the resources in."
+  type        = string
+  default     = "europe-west1"
+}
 
 variable "activate_apis" {
   description = "Specify a list of APIs to enable"
-  default     = [
+  default = [
     "sourcerepo.googleapis.com",
     "compute.googleapis.com",
     "servicemanagement.googleapis.com",
@@ -32,19 +37,20 @@ variable "activate_apis" {
   ]
 }
 
-variable "packer_bindings" {
-  description = "List of role bindings to the project for the Packer service account"
-  type        = list(string)
-  default     = [
-    "roles/compute.instanceAdmin",
-    "roles/iam.serviceAccountUser",
-    "roles/iap.tunnelResourceAccessor",
-    "roles/storage.objectViewer"
-  ]
-}
-
 variable "network_name" {
   description = "Name of the VPC network."
-  type = string
-  default = "packer-builder"
+  type        = string
+  default     = "packer-builder"
 }
+
+variable "packer_subnet_name" {
+  description = "Name of the subnet for Packer instances."
+  type        = string
+  default     = "packer-private-01"
+}
+
+variable "worker_machine_type" {
+  description = "Type for the Cloud Build worker pool machines"
+  default     = "e2-standard-4"
+}
+

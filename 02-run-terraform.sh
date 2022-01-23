@@ -7,11 +7,8 @@ export DEFAULT_PROJECT_NAME="infraxys";
 
 . ./env.sh;
 
-if [ ${DIRECT_RUN:-false} != "true" ]; then
-  initialize;
-  request_config;
-  ensure_packer;
-  ensure_terraform;
+if [ ${GOOGLE_CLOUD_SHELL:-false} == "true" ]; then
+  enforce_auth_popup;
 fi;
 
 run_terraform;

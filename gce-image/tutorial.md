@@ -9,7 +9,8 @@ This version creates the following resources:
 
 - Run setup.sh:
 ```bash
-./setup.sh;
+cd gce-image/builder-environment
+./00-run-all.sh;
 ```
 
 

@@ -11,9 +11,9 @@ This version creates the following resources:
 
 ## Start the configuration
 
-- Run setup.sh:
+- Run setup:
 ```bash
-./setup.sh;
+./00-run-all.sh;
 ```
 
 
